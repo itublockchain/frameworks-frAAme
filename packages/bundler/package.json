@@ -1,0 +1,16 @@
+{
+  "name": "bundler",
+  "version": "1.0.0",
+  "description": "Mock Bundler",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "ethers": "^5.7.2",
+    "express": "^4.19.1"
+  }
+}
