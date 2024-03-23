@@ -5,9 +5,8 @@ import {
   getFrameMessage,
   getPreviousFrame,
 } from "frames.js/next/server";
-import QrSvg from "@wojtekmaj/react-qr-svg";
 
-export const frames = createFrames({
+const frames = createFrames({
   basePath: "/frames",
   initialState: {
     pageIndex: 0,
@@ -625,5 +624,4 @@ const handleRequest = frames(async (ctx) => {
     };
   }
 });
-export const GET = handleRequest;
-export const POST = handleRequest;
+export {handleRequest as GET, handleRequest as POST};
