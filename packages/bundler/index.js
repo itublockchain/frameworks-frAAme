@@ -82,6 +82,34 @@ app.post("/ops", jsonParser, async function (req, res, next) {
   }
 });
 
+// CLIENT SIDE API
+app.post("/getSignerAddress", jsonParser, async function (req, res, next) {
+  const body = req.body;
+  if (body.signerAddress == null) {
+    return res.status(400).send({
+      status: false,
+      error: "Missing body",
+    });
+  }
+  const signerAddress = body.signerAddress;
+  res.status(200).send({
+    status: true,
+    signerAddress: signerAddress,
+  });
+});
+
+app.post("/giveAccountAddress", async function (req, res, next) {
+  const accountFactory = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+  const sender = ethers.utils.getContractAddress({
+    from: accountFactory,
+    nonce: await accountFactory.provider.getTransactionCount(accountFactory),
+  });
+  res.send({
+    status: true,
+    address: sender,
+  });
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });

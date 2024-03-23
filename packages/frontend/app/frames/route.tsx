@@ -1,25 +1,33 @@
 /* eslint-disable react/jsx-key */
 import { createFrames, Button } from "frames.js/next";
-import {
-  FrameImage,
-  getFrameMessage,
-  getPreviousFrame,
-} from "frames.js/next/server";
+import { getFrameMessage, getPreviousFrame } from "frames.js/next/server";
+import { farcasterHubContext } from "frames.js/middleware";
 
 const frames = createFrames({
   basePath: "/frames",
   initialState: {
     pageIndex: 0,
   },
+  /*   middleware: [
+    farcasterHubContext({
+      hubHttpUrl: "http://localhost:3010",
+    }),
+  ], */
 });
 
 const handleRequest = frames(async (ctx) => {
   const pageIndex = Number(ctx.searchParams.pageIndex || 0);
   const previousFrame = getPreviousFrame(ctx.searchParams);
+  console.log(previousFrame);
   const frameMessage = await getFrameMessage(previousFrame.postBody, {
     hubHttpUrl: "http://localhost:3010",
   });
   const userData = frameMessage?.requesterUserData;
+  console.log("prev", previousFrame);
+  console.log("message", frameMessage);
+  console.log("context message", ctx.message);
+  console.log("context", ctx.request);
+  console.log("url", ctx.url);
   console.log(pageIndex);
 
   if (pageIndex === 1) {
@@ -522,37 +530,57 @@ const handleRequest = frames(async (ctx) => {
       ],
     };
   } else {
-    // HOME PAGE
-    return {
-      image: (
-        <div tw="bg-purple-800 text-white w-full h-full justify-center items-center flex flex-col">
-          <a>{`Welcome to frAAme`}</a>
-          <a>{`${userData?.username}`}</a>
-          <a>{`Your Address:`}</a>
-          <a>Balances:</a>
-          <a>ETH:</a>
-          <a>USDC:</a>
-          <a>DAI:</a>
-        </div>
-      ),
-      buttons: [
-        <Button
-          action="link"
-          target={`https://basescan.org/address${"address"}`}
-        >
-          Scanner
-        </Button>,
-        <Button action="post" target="?pageIndex=1">
-          Receive
-        </Button>,
-        <Button action="post" target="?pageIndex=2">
-          Send
-        </Button>,
-        <Button action="post" target="?pageIndex=7">
-          Next
-        </Button>,
-      ],
-    };
+    if (!userData) {
+      //ACCOUNT CREATE PAGE
+      return {
+        image: (
+          <div tw="flex flex-col justify-center items-center h-full w-full">
+            <a>{`Welcome to frAAme`}</a>
+            <a>{`Create an account or fetch your account to continue`}</a>
+          </div>
+        ),
+        buttons: [
+          <Button action="post" target="/">
+            Create Account
+          </Button>,
+          <Button action="post" target="?pageIndex=1">
+            Fetch My Account
+          </Button>,
+        ],
+      };
+    } else {
+      // HOME PAGE
+      return {
+        image: (
+          <div tw="bg-purple-800 text-white w-full h-full justify-center items-center flex flex-col">
+            <a>{`Welcome to frAAme`}</a>
+            <a>{`${userData?.username}`}</a>
+            <a>{`Your Address:`}</a>
+            <a>Balances:</a>
+            <a>ETH:</a>
+            <a>USDC:</a>
+            <a>DAI:</a>
+          </div>
+        ),
+        buttons: [
+          <Button
+            action="link"
+            target={`https://basescan.org/address${"address"}`}
+          >
+            Scanner
+          </Button>,
+          <Button action="post" target="?pageIndex=1">
+            Receive
+          </Button>,
+          <Button action="post" target="?pageIndex=2">
+            Send
+          </Button>,
+          <Button action="post" target="?pageIndex=7">
+            Next
+          </Button>,
+        ],
+      };
+    }
   }
 });
 export { handleRequest as GET, handleRequest as POST };
