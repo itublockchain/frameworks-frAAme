@@ -12,6 +12,8 @@ import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 import "@account-abstraction/contracts/core/BaseAccount.sol";
 import "@account-abstraction/contracts/samples/callback/TokenCallbackHandler.sol";
 
+import "./lib/Ed25519.sol";
+
 /**
   * minimal account.
   *  this is sample minimal account.
@@ -43,6 +45,15 @@ contract Account is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, Initiali
     function _onlyOwner() internal view {
         //directly from EOA owner, or through the account itself (which gets redirected through execute())
         require(msg.sender == owner || msg.sender == address(this), "only owner");
+    }
+
+    function verifySignature(
+        bytes32 k,
+        bytes32 r,
+        bytes32 s,
+        bytes memory m
+    ) public view returns (bool) {
+        return Ed25519.verify(k, r, s, m);
     }
 
     /**
