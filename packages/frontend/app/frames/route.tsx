@@ -35,7 +35,7 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames">
+        <Button action="post" target="/">
           Back to Home
         </Button>,
         <Button
@@ -55,10 +55,10 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames">
+        <Button action="post" target="/">
           Back To Home
         </Button>,
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=3">
+        <Button action="post" target="?pageIndex=3">
           Next
         </Button>,
       ],
@@ -73,10 +73,10 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=2">
+        <Button action="post" target="?pageIndex=2">
           Back
         </Button>,
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=4">
+        <Button action="post" target="?pageIndex=4">
           Next
         </Button>,
       ],
@@ -91,10 +91,10 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=3">
+        <Button action="post" target="?pageIndex=3">
           Back
         </Button>,
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=5">
+        <Button action="post" target="?pageIndex=5">
           Next
         </Button>,
       ],
@@ -109,10 +109,10 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=4">
+        <Button action="post" target="?pageIndex=4">
           Back
         </Button>,
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=6">
+        <Button action="post" target="?pageIndex=6">
           Confirm
         </Button>,
       ],
@@ -126,7 +126,7 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames">
+        <Button action="post" target="/">
           Back To Home
         </Button>,
         <Button action="link" target={`https://basescan.org/tx/"${"txid"}`}>
@@ -143,25 +143,16 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=8">
+        <Button action="post" target="?pageIndex=8">
           SWAP
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=13"
-        >
+        <Button action="post" target="?pageIndex=13">
           LEND
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=18"
-        >
+        <Button action="post" target="?pageIndex=18">
           BORROW
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=23"
-        >
+        <Button action="post" target="?pageIndex=23">
           MINT
         </Button>,
       ],
@@ -175,10 +166,10 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=7">
+        <Button action="post" target="?pageIndex=7">
           Back
         </Button>,
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=9">
+        <Button action="post" target="?pageIndex=9">
           Next
         </Button>,
       ],
@@ -193,13 +184,10 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=8">
+        <Button action="post" target="?pageIndex=8">
           Back
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=10"
-        >
+        <Button action="post" target="?pageIndex=10">
           Next
         </Button>,
       ],
@@ -214,13 +202,10 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=9">
+        <Button action="post" target="?pageIndex=9">
           Back
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=11"
-        >
+        <Button action="post" target="?pageIndex=11">
           Next
         </Button>,
       ],
@@ -236,16 +221,10 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=10"
-        >
+        <Button action="post" target="?pageIndex=10">
           Back
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=12"
-        >
+        <Button action="post" target="?pageIndex=12">
           Confirm
         </Button>,
       ],
@@ -259,7 +238,7 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames">
+        <Button action="post" target="/">
           Back To Home
         </Button>,
         <Button action="link" target={`https://basescan.org/tx/"${"txid"}`}>
@@ -276,19 +255,13 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=7">
+        <Button action="post" target="?pageIndex=7">
           Back
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=14"
-        >
+        <Button action="post" target="?pageIndex=14">
           Unlend
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=15"
-        >
+        <Button action="post" target="?pageIndex=15">
           Lend
         </Button>,
       ],
@@ -302,13 +275,10 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=7">
+        <Button action="post" target="?pageIndex=7">
           Back
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=27"
-        >
+        <Button action="post" target="?pageIndex=27">
           Unlend
         </Button>,
       ],
@@ -322,16 +292,10 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=13"
-        >
+        <Button action="post" target="?pageIndex=13">
           Back
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=16"
-        >
+        <Button action="post" target="?pageIndex=16">
           Next
         </Button>,
       ],
@@ -346,16 +310,10 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=15"
-        >
+        <Button action="post" target="?pageIndex=15">
           Back
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=17"
-        >
+        <Button action="post" target="?pageIndex=17">
           Confirm
         </Button>,
       ],
@@ -369,7 +327,7 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames">
+        <Button action="post" target="/">
           Back To Home
         </Button>,
         <Button action="link" target={`https://basescan.org/tx/"${"txid"}`}>
@@ -387,19 +345,13 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=7">
+        <Button action="post" target="?pageIndex=7">
           Back
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=19"
-        >
+        <Button action="post" target="?pageIndex=19">
           Borrow
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=21"
-        >
+        <Button action="post" target="?pageIndex=21">
           Repay
         </Button>,
       ],
@@ -415,16 +367,10 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=18"
-        >
+        <Button action="post" target="?pageIndex=18">
           Back
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=20"
-        >
+        <Button action="post" target="?pageIndex=20">
           Borrow
         </Button>,
       ],
@@ -439,7 +385,7 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames">
+        <Button action="post" target="/">
           Back To Home
         </Button>,
         <Button action="link" target={`https://basescan.org/tx/"${"txid"}`}>
@@ -458,16 +404,10 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=18"
-        >
+        <Button action="post" target="?pageIndex=18">
           Back
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=22"
-        >
+        <Button action="post" target="?pageIndex=22">
           Repay
         </Button>,
       ],
@@ -482,7 +422,7 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames">
+        <Button action="post" target="/">
           Back To Home
         </Button>,
         <Button action="link" target={`https://basescan.org/tx/"${"txid"}`}>
@@ -499,25 +439,16 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=7">
+        <Button action="post" target="?pageIndex=7">
           Back
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=24"
-        >
+        <Button action="post" target="?pageIndex=24">
           Mint on Base
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=25"
-        >
+        <Button action="post" target="?pageIndex=25">
           Mint on OP
         </Button>,
-        <Button
-          action="post"
-          target="http://localhost:3001/frames?pageIndex=26"
-        >
+        <Button action="post" target="?pageIndex=26">
           Mint on ARB
         </Button>,
       ],
@@ -531,7 +462,7 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames">
+        <Button action="post" target="/">
           Back To Home
         </Button>,
         <Button action="link" target={`https://basescan.org/tx/"${"txid"}`}>
@@ -548,7 +479,7 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames">
+        <Button action="post" target="/">
           Back To Home
         </Button>,
         <Button action="link" target={`https://basescan.org/tx/"${"txid"}`}>
@@ -565,7 +496,7 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames">
+        <Button action="post" target="/">
           Back To Home
         </Button>,
         <Button action="link" target={`https://basescan.org/tx/"${"txid"}`}>
@@ -582,7 +513,7 @@ const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="post" target="http://localhost:3001/frames">
+        <Button action="post" target="/">
           Back To Home
         </Button>,
         <Button action="link" target={`https://basescan.org/tx/"${"txid"}`}>
@@ -611,17 +542,17 @@ const handleRequest = frames(async (ctx) => {
         >
           Scanner
         </Button>,
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=1">
+        <Button action="post" target="?pageIndex=1">
           Receive
         </Button>,
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=2">
+        <Button action="post" target="?pageIndex=2">
           Send
         </Button>,
-        <Button action="post" target="http://localhost:3001/frames?pageIndex=7">
+        <Button action="post" target="?pageIndex=7">
           Next
         </Button>,
       ],
     };
   }
 });
-export {handleRequest as GET, handleRequest as POST};
+export { handleRequest as GET, handleRequest as POST };
