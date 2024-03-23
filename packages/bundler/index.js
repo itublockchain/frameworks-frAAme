@@ -2,6 +2,9 @@ const ethers = require("ethers");
 var express = require("express");
 const app = express();
 require("dotenv").config();
+var bodyParser = require("body-parser");
+var jsonParser = bodyParser.json();
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 const { LOCALHOST_PRIVATE_KEY } = process.env;
 const { ENTRYPOINT_ADDRESS } = process.env;
@@ -26,10 +29,10 @@ const USEROP_REQUIRED_FIELDS = [
   "signature",
 ];
 
-app.post("/ops", async function (req, res, next) {
-    console.log(req.body);
+app.post("/ops", jsonParser, async function (req, res, next) {
+  console.log(req.body);
   try {
-    if (req.body?.txs == null) {
+    if (req.body.txs == null) {
       return res.status(400).send({
         status: false,
         error: "Missing field txs",
@@ -66,8 +69,6 @@ app.post("/ops", async function (req, res, next) {
     });
     const randomId = Buffer.from(ethers.utils.randomBytes(10)).toString("hex");
 
-    console.log(`Handle transaction complete: ${handleTx.hash}`);
-
     res.send({
       status: true,
       jobId: randomId,
@@ -79,10 +80,6 @@ app.post("/ops", async function (req, res, next) {
       error: e.message,
     });
   }
-});
-
-app.post("/ops2", async function (req, res, next) {
-    console.log("Hello World!");
 });
 
 app.listen(port, () => {
