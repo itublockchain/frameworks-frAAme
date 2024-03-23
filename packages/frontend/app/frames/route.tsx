@@ -1,5 +1,11 @@
 /* eslint-disable react/jsx-key */
 import { createFrames, Button } from "frames.js/next";
+import {
+  FrameImage,
+  getFrameMessage,
+  getPreviousFrame,
+} from "frames.js/next/server";
+import QrSvg from "@wojtekmaj/react-qr-svg";
 
 export const frames = createFrames({
   basePath: "/frames",
@@ -10,20 +16,34 @@ export const frames = createFrames({
 
 const handleRequest = frames(async (ctx) => {
   const pageIndex = Number(ctx.searchParams.pageIndex || 0);
+  const previousFrame = getPreviousFrame(ctx.searchParams);
+  const frameMessage = await getFrameMessage(previousFrame.postBody, {
+    hubHttpUrl: "http://localhost:3010",
+  });
+  const userData = frameMessage?.requesterUserData;
   console.log(pageIndex);
 
   if (pageIndex === 1) {
     // RECEIVE PAGE
     return {
       image: (
-        <div tw="flex flex-col">
-          <a>{`Your Address:`}</a>
-          <a>QR CODE</a>
+        <div tw="flex flex-col justify-center items-center h-full w-full">
+          <a>{`Your Address: ${userData?.displayName}`}</a>
+          <img
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=125x125&data=ethereum:${userData?.displayName}`}
+            tw="w-1/4 mt-12"
+          ></img>
         </div>
       ),
       buttons: [
         <Button action="post" target="http://localhost:3001/frames">
           Back to Home
+        </Button>,
+        <Button
+          action="link"
+          target={`https://blockscan.com/address/${userData?.displayName}`}
+        >
+          View on Blockscan
         </Button>,
       ],
     };
@@ -575,9 +595,9 @@ const handleRequest = frames(async (ctx) => {
     // HOME PAGE
     return {
       image: (
-        <div tw="flex flex-col">
+        <div tw="bg-purple-800 text-white w-full h-full justify-center items-center flex flex-col">
           <a>{`Welcome to frAAme`}</a>
-          <a>{`@username`}</a>
+          <a>{`${userData?.username}`}</a>
           <a>{`Your Address:`}</a>
           <a>Balances:</a>
           <a>ETH:</a>
