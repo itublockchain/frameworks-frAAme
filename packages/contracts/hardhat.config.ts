@@ -12,6 +12,11 @@ const config: HardhatUserConfig = {
       url: "http://localhost:8545",
       accounts: [process.env.LOCALHOST_PRIVATE_KEY!],
     },
+    base: {
+      chainId: 84532,
+      url: process.env.BASE_SEPOLIA_API_KEY,
+      accounts: [process.env.PRIVATE_KEY!],
+    },
   },
   solidity: {
     compilers: [
@@ -24,8 +29,11 @@ const config: HardhatUserConfig = {
           },
         },
       },
-    ]
-  }
+    ],
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
+  },
 };
 
 export default config;

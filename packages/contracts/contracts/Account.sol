@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.12;
 
 /* solhint-disable avoid-low-level-calls */
@@ -25,6 +25,7 @@ contract Account is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, Initiali
     using ECDSA for bytes32;
 
     address public owner;
+    string public custody;
 
     IEntryPoint private immutable _entryPoint;
 
@@ -35,12 +36,12 @@ contract Account is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, Initiali
         return _entryPoint;
     }
 
-
     // solhint-disable-next-line no-empty-blocks
 
-    constructor(IEntryPoint anEntryPoint, address _owner) {
+    constructor(IEntryPoint anEntryPoint, address _owner, string memory _custody) {
         _entryPoint = anEntryPoint;
         owner = _owner;
+        custody = _custody;
     }
 
     function _onlyOwner() internal view {
@@ -145,8 +146,3 @@ contract Account is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, Initiali
     }
 }
 
-contract AccountFactory {
-    function createAccount(address _entryPoint, address _owner) external returns (address) {
-        return address(new Account(IEntryPoint(_entryPoint), _owner));
-    }
-}
