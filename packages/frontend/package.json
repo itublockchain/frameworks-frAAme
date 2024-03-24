@@ -12,6 +12,7 @@
     "@farcaster/core": "^0.14.7",
     "@farcaster/hub-nodejs": "^0.11.8",
     "@neynar/nodejs-sdk": "^1.13.1",
+    "@tanstack/react-query": "^5.28.6",
     "@types/qrcode.react": "^1.0.5",
     "@wojtekmaj/react-qr-svg": "^1.0.0",
     "axios": "^1.6.8",
@@ -22,7 +23,9 @@
     "next": "14.1.4",
     "qrcode.react": "^3.1.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "viem": "2.x",
+    "wagmi": "^2.5.12"
   },
   "devDependencies": {
     "@types/node": "^20",

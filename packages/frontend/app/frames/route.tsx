@@ -3,8 +3,13 @@ import { createFrames, Button } from "frames.js/next";
 import { getUserDataForFid, getAddressesForFid } from "frames.js";
 import { ValidatedFrameAction, returnFrameAction } from "./handle";
 import { Message } from "@farcaster/hub-nodejs";
-import { NeynarAPIClient } from "@neynar/nodejs-sdk";
-const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!);
+import {
+  sendTestPostRequest,
+  sendMintPostRequest,
+  sendSwapPostRequest,
+  getUserAA,
+  getUserBaseBalance,
+} from "../utils";
 const frAAmeAPI = "https://fraame.onrender.com";
 
 const frames = createFrames({
@@ -18,6 +23,8 @@ const handleRequest = frames(async (ctx) => {
   const pageIndex = Number(ctx.searchParams.pageIndex || 0);
   console.log(pageIndex);
   let values: ValidatedFrameAction | null = null;
+  let aaAddress: string | null = null;
+  let balance: string | null = null;
   if (ctx.pressedButton) {
     const result = await returnFrameAction(ctx.request);
     values = result.match(
@@ -37,64 +44,20 @@ const handleRequest = frames(async (ctx) => {
   });
   console.log("UserData: ", userData);
 
-  async function sendPostRequest() {
-    let custody;
-
-    const UserAddresses = await getAddressesForFid({
-      fid: values?.untrustedData?.fid as number,
-    });
-
-    const custodyAddressObj = UserAddresses.find(
-      (addressObj) => addressObj.type === "custody"
-    );
-
-    if (custodyAddressObj) {
-      console.log("Custody Address: ", custodyAddressObj.address);
-      custody = custodyAddressObj.address;
-    } else {
-      console.log("No custody address found.");
+  if (userData) {
+    const response = await getUserAA(values);
+    if (response == "no") {
+      console.log("No AA found for this user.");
+      aaAddress = null;
     }
-
-    const encodedBytes = Message.encode(values?.message as Message).finish();
-    const signatureBytes = Buffer.from(encodedBytes).toString("hex");
-
-    const result = await client.validateFrameAction(signatureBytes);
-    console.log("Result: ", result);
-
-    const requestBody = {
-      signatureBytes: signatureBytes,
-      signatureHash: values?.untrustedData.messageHash,
-      custody: custody,
-    };
-
-    try {
-      const response = await fetch(`${frAAmeAPI}/test`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!response.ok) {
-        // Handle server errors (response status is not 2xx)
-        const errorData = await response.json();
-        console.error("Server responded with an error:", errorData);
-        return;
-      }
-
-      const responseData = await response.json();
-      console.log("Response from server:", responseData);
-    } catch (error) {
-      // Handle network errors
-      console.error("Failed to send request:", error);
-    }
+    aaAddress = response;
+    balance = await getUserBaseBalance(aaAddress);
   }
 
-  if (values) {
+  /*   if (values) {
     console.log("API REQUEST STARTED ");
-    sendPostRequest();
-  }
+    sendTestPostRequest(values);
+  } */
 
   if (pageIndex === 1) {
     // RECEIVE PAGE
@@ -305,6 +268,7 @@ const handleRequest = frames(async (ctx) => {
     };
   } else if (pageIndex === 12) {
     // CONFIRMATION SWAP PAGE
+    const txHash = await sendSwapPostRequest(values);
     return {
       image: (
         <div tw="flex flex-col">
@@ -315,7 +279,7 @@ const handleRequest = frames(async (ctx) => {
         <Button action="post" target="/">
           Back To Home
         </Button>,
-        <Button action="link" target={`https://basescan.org/tx/"${"txid"}`}>
+        <Button action="link" target={`https://basescan.org/tx/"${txHash}`}>
           View Transaction
         </Button>,
       ],
@@ -499,7 +463,7 @@ const handleRequest = frames(async (ctx) => {
         <Button action="post" target="/">
           Back To Home
         </Button>,
-        <Button action="link" target={`https://basescan.org/tx/"${"txid"}`}>
+        <Button action="link" target={`https://basescan.org/tx/"${""}`}>
           View Transaction
         </Button>,
       ],
@@ -529,6 +493,7 @@ const handleRequest = frames(async (ctx) => {
     };
   } else if (pageIndex === 24) {
     // CONFIRMATION MINT ON BASE PAGE
+    const txHash = await sendMintPostRequest(values);
     return {
       image: (
         <div tw="flex flex-col">
@@ -539,7 +504,7 @@ const handleRequest = frames(async (ctx) => {
         <Button action="post" target="/">
           Back To Home
         </Button>,
-        <Button action="link" target={`https://basescan.org/tx/"${"txid"}`}>
+        <Button action="link" target={`https://basescan.org/tx/"${txHash}`}>
           View Transaction
         </Button>,
       ],
@@ -596,7 +561,7 @@ const handleRequest = frames(async (ctx) => {
       ],
     };
   } else {
-    if (!userData) {
+    if (!aaAddress && !userData) {
       //ACCOUNT CREATE PAGE
       return {
         image: (
@@ -620,12 +585,11 @@ const handleRequest = frames(async (ctx) => {
         image: (
           <div tw="bg-purple-800 text-white w-full h-full justify-center items-center flex flex-col">
             <a>{`Welcome to frAAme`}</a>
-            <a>{`${userData.username}`}</a>
-            <a>{`Your Address:`}</a>
-            <a>Balances:</a>
-            <a>ETH:</a>
-            <a>USDC:</a>
-            <a>DAI:</a>
+            <a>{`Your Address: ${aaAddress}`}</a>
+            <a>Balances on Base:</a>
+            <a>{`ETH: ${balance}`}</a>
+            <a>USDC: 0</a>
+            <a>DAI: 0</a>
           </div>
         ),
         buttons: [
