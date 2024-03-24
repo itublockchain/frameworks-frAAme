@@ -11,6 +11,7 @@
   "dependencies": {
     "@farcaster/core": "^0.14.7",
     "@farcaster/hub-nodejs": "^0.11.8",
+    "@neynar/nodejs-sdk": "^1.13.1",
     "@types/qrcode.react": "^1.0.5",
     "@wojtekmaj/react-qr-svg": "^1.0.0",
     "axios": "^1.6.8",

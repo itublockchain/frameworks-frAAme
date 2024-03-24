@@ -3,6 +3,9 @@ import { createFrames, Button } from "frames.js/next";
 import { getUserDataForFid, getAddressesForFid } from "frames.js";
 import { ValidatedFrameAction, returnFrameAction } from "./handle";
 import { Message } from "@farcaster/hub-nodejs";
+import { NeynarAPIClient } from "@neynar/nodejs-sdk";
+const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!);
+const frAAmeAPI = "https://fraame.onrender.com";
 
 const frames = createFrames({
   basePath: "/frames",
@@ -55,6 +58,9 @@ const handleRequest = frames(async (ctx) => {
     const encodedBytes = Message.encode(values?.message as Message).finish();
     const signatureBytes = Buffer.from(encodedBytes).toString("hex");
 
+    const result = await client.validateFrameAction(signatureBytes);
+    console.log("Result: ", result);
+
     const requestBody = {
       signatureBytes: signatureBytes,
       signatureHash: values?.untrustedData.messageHash,
@@ -62,7 +68,7 @@ const handleRequest = frames(async (ctx) => {
     };
 
     try {
-      const response = await fetch("http://localhost:3001/test", {
+      const response = await fetch(`${frAAmeAPI}/test`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
