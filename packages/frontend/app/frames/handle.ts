@@ -23,6 +23,7 @@ export interface ValidatedFrameAction {
   message: Message;
   untrustedData: {
     fid: number;
+    messageHash: string;
   };
 }
 
@@ -102,6 +103,7 @@ export function returnFrameAction(
       message: frameMessage,
       untrustedData: {
         fid: packet.untrustedData.fid,
+        messageHash: packet.untrustedData.messageHash,
       },
     };
 

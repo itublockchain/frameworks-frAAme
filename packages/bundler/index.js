@@ -10,7 +10,7 @@ const { ENTRYPOINT_ADDRESS } = process.env;
 const { ACCOUNT_FACTORY_ADDRESS } = process.env;
 const { PORT } = process.env;
 
-const port = PORT || 3000;
+const port = PORT || 3001;
 
 const abi = require("./chain/abi");
 const accountFactoryAbi = require("./chain/accountFactoryAbi");
@@ -97,33 +97,31 @@ app.post("/ops", jsonParser, async function (req, res, next) {
 });
 
 // CLIENT SIDE API
-app.post("/getSignerAddress", jsonParser, async function (req, res, next) {
+app.post("/createAccount", jsonParser, async function (req, res, next) {
   const body = req.body;
-  if (body.signerAddress == null) {
+  if (body.owner == null) {
     return res.status(400).send({
       status: false,
       error: "Missing body",
     });
   }
+  const signature = body.signatureBytes;
+  const signatureHash = body.signatureHash;
+  const custody = body.custody;
 
   const accountAddress = ethers.utils.getContractAddress({
     from: ACCOUNT_FACTORY_ADDRESS,
     nonce: await provider.getTransactionCount(ACCOUNT_FACTORY_ADDRESS),
   });
 
-  await entryPoint
-    .connect(signer0)
-    .depositTo(body.signerAddress, {
-      value: ethers.utils.parseEther("0.00001"),
-    });
+  await entryPoint.connect(signer0).depositTo(owner, {
+    value: ethers.utils.parseEther("0.00001"),
+  });
 
   const initCode =
     ACCOUNT_FACTORY_ADDRESS +
     accountFactory.interface
-      .encodeFunctionData("createAccount", [
-        ENTRYPOINT_ADDRESS,
-        body.signerAddress,
-      ])
+      .encodeFunctionData("createAccount", [ENTRYPOINT_ADDRESS, owner])
       .slice(2);
 
   const userInitOp = {
@@ -161,9 +159,23 @@ app.post("/getSignerAddress", jsonParser, async function (req, res, next) {
   }
 });
 
-app.get("/swap", async function (req, res, next) {
-  
+app.post("/test", jsonParser, async function (req, res, next) {
+  const body = req.body;
+  if (body.signatureBytes == null) {
+    return res.status(400).send({
+      status: false,
+      error: "Missing body",
+    });
+  }
+  const signature = body.signatureBytes;
+  const signatureHash = body.signatureHash;
+  const custody = body.custody;
+  console.log("API SIGN: ", signature);
+  console.log("API HASH: ", signatureHash);
+  console.log("API CUSTODY: ", custody);
 });
+
+app.get("/swap", async function (req, res, next) {});
 
 app.listen(port, () => {
   console.log(`Exıample app listening on port ${port}`);

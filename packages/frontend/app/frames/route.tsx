@@ -1,7 +1,8 @@
 /* eslint-disable react/jsx-key */
 import { createFrames, Button } from "frames.js/next";
-import { getUserDataForFid } from "frames.js";
-import { returnFrameAction } from "./handle";
+import { getUserDataForFid, getAddressesForFid } from "frames.js";
+import { ValidatedFrameAction, returnFrameAction } from "./handle";
+import { Message } from "@farcaster/hub-nodejs";
 
 const frames = createFrames({
   basePath: "/frames",
@@ -13,12 +14,13 @@ const frames = createFrames({
 const handleRequest = frames(async (ctx) => {
   const pageIndex = Number(ctx.searchParams.pageIndex || 0);
   console.log(pageIndex);
-  let values = null;
+  let values: ValidatedFrameAction | null = null;
   if (ctx.pressedButton) {
     const result = await returnFrameAction(ctx.request);
     values = result.match(
       (returnFrameAction) => {
         console.log("FID: ", returnFrameAction.untrustedData.fid);
+        console.log("HASH: ", returnFrameAction.untrustedData.messageHash);
         return returnFrameAction;
       },
       (error) => {
@@ -27,11 +29,66 @@ const handleRequest = frames(async (ctx) => {
       }
     );
   }
-  console.log("Values: ", values);
   const userData = await getUserDataForFid({
-    fid: (values?.untrustedData?.fid as number) || 0,
+    fid: values?.untrustedData?.fid as number,
   });
   console.log("UserData: ", userData);
+
+  async function sendPostRequest() {
+    let custody;
+
+    const UserAddresses = await getAddressesForFid({
+      fid: values?.untrustedData?.fid as number,
+    });
+
+    const custodyAddressObj = UserAddresses.find(
+      (addressObj) => addressObj.type === "custody"
+    );
+
+    if (custodyAddressObj) {
+      console.log("Custody Address: ", custodyAddressObj.address);
+      custody = custodyAddressObj.address;
+    } else {
+      console.log("No custody address found.");
+    }
+
+    const encodedBytes = Message.encode(values?.message as Message).finish();
+    const signatureBytes = Buffer.from(encodedBytes).toString("hex");
+
+    const requestBody = {
+      signatureBytes: signatureBytes,
+      signatureHash: values?.untrustedData.messageHash,
+      custody: custody,
+    };
+
+    try {
+      const response = await fetch("http://localhost:3001/test", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        // Handle server errors (response status is not 2xx)
+        const errorData = await response.json();
+        console.error("Server responded with an error:", errorData);
+        return;
+      }
+
+      const responseData = await response.json();
+      console.log("Response from server:", responseData);
+    } catch (error) {
+      // Handle network errors
+      console.error("Failed to send request:", error);
+    }
+  }
+
+  if (values) {
+    console.log("API REQUEST STARTED ");
+    sendPostRequest();
+  }
 
   if (pageIndex === 1) {
     // RECEIVE PAGE
