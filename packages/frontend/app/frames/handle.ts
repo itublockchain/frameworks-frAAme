@@ -9,7 +9,6 @@ export interface FrameSignaturePacket {
 }
 export interface ValidatedFrameAction {
   message: Message;
-  wallet: WalletInfo;
 }
 export interface MissingInfoFrameValidationError {
   kind: "missing";
@@ -21,24 +20,10 @@ export interface HubFrameValidationError {
   message: string;
   error?: any;
 }
-export interface WalletFrameValidationError {
-  kind: "wallet";
-  message: string;
-  error: any;
-}
 export type FrameValidationError =
   | MissingInfoFrameValidationError
-  | HubFrameValidationError
-  | WalletFrameValidationError;
+  | HubFrameValidationError;
 
-export type RouteParams = {
-  compressedPartialUserOp: string;
-};
-export type WalletInfo = {
-  address: AddressLike;
-  nonce: BigNumberish;
-  code: string;
-};
 export function intoMissingInfoFrameValidationError(
   message: string,
   error?: any
@@ -56,17 +41,6 @@ export function intoHubFrameValidationError(
 ): HubFrameValidationError {
   return {
     kind: "hub",
-    message,
-    error,
-  };
-}
-
-export function intoWalletFrameValidationError(
-  message: string,
-  error?: any
-): WalletFrameValidationError {
-  return {
-    kind: "wallet",
     message,
     error,
   };
@@ -122,5 +96,16 @@ export function validateFrameAction(
           intoHubFrameValidationError("Frame message was invalid")
         );
       }
+
+      // Create a ValidatedFrameAction object
+      const validatedFrameAction: ValidatedFrameAction = {
+        message: validationMessage,
+      };
+
+      // Return the ValidatedFrameAction object wrapped in a ResultAsync
+      return ResultAsync.fromPromise(
+        Promise.resolve(validatedFrameAction),
+        () => intoHubFrameValidationError("Unexpected error")
+      );
     });
 }
