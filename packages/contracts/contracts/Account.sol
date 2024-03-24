@@ -13,6 +13,7 @@ import "@account-abstraction/contracts/core/BaseAccount.sol";
 import "@account-abstraction/contracts/samples/callback/TokenCallbackHandler.sol";
 
 import "./lib/Ed25519.sol";
+import "./lib/Parser.sol";
 
 /**
   * minimal account.
@@ -20,7 +21,7 @@ import "./lib/Ed25519.sol";
   *  has execute, eth handling methods
   *  has a single signer that can send requests through the entryPoint.
   */
-contract Account is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, Initializable {
+contract Account is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, Initializable, Parser {
     using ECDSA for bytes32;
 
     address public owner;
@@ -52,7 +53,7 @@ contract Account is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, Initiali
         bytes32 r,
         bytes32 s,
         bytes memory m
-    ) public view returns (bool) {
+    ) public pure returns (bool) {
         return Ed25519.verify(k, r, s, m);
     }
 
@@ -95,12 +96,15 @@ contract Account is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, Initiali
     }
 
     /// implement template method of BaseAccount
-    function _validateSignature(UserOperation calldata userOp, bytes32 userOpHash)
+    function _validateSignature(UserOperation calldata userOp, bytes32)
     internal override virtual returns (uint256 validationData) {
-        bytes32 hash = userOpHash.toEthSignedMessageHash();
-        if (owner != hash.recover(userOp.signature))
+        (bytes32 signerAddress, bytes memory fcHash, bytes32 r, bytes32 s) = parseData(userOp.signature);
+        bool isValidSig = verifySignature(signerAddress, r, s, fcHash);
+        if (!isValidSig) {
             return SIG_VALIDATION_FAILED;
-        return 0;
+        } else {
+            return 0;
+        }
     }
 
     function _call(address target, uint256 value, bytes memory data) internal {

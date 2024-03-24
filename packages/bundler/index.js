@@ -78,7 +78,7 @@ app.post("/ops", jsonParser, async function (req, res, next) {
 
     console.log("Handling operations", userOps);
 
-    await entryPoint.handleOps(userOps, signer0.address, {
+    const tx = await entryPoint.handleOps(userOps, signer0.address, {
       gasLimit: 5000000,
     });
     const randomId = Buffer.from(ethers.utils.randomBytes(10)).toString("hex");
@@ -86,6 +86,7 @@ app.post("/ops", jsonParser, async function (req, res, next) {
     res.send({
       status: true,
       jobId: randomId,
+      txHash: tx.hash,
     });
   } catch (e) {
     console.log(e);
@@ -114,7 +115,7 @@ app.post("/createAccount", jsonParser, async function (req, res, next) {
     nonce: await provider.getTransactionCount(ACCOUNT_FACTORY_ADDRESS),
   });
 
-  await entryPoint.connect(signer0).depositTo(owner, {
+  await entryPoint.connect(signer0).depositTo(accountAddress, {
     value: ethers.utils.parseEther("0.00001"),
   });
 
