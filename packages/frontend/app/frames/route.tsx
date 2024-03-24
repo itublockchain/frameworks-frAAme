@@ -1,32 +1,37 @@
 /* eslint-disable react/jsx-key */
 import { createFrames, Button } from "frames.js/next";
-import { getFrameMessage, getPreviousFrame } from "frames.js/next/server";
-import { farcasterHubContext } from "frames.js/middleware";
-import { validateFrameAction } from "./handle";
+import { getUserDataForFid } from "frames.js";
+import { returnFrameAction } from "./handle";
 
 const frames = createFrames({
   basePath: "/frames",
   initialState: {
     pageIndex: 0,
   },
-  middleware: [
-    farcasterHubContext({
-      hubHttpUrl: "https://hub-api.neynar.com/v1/info",
-    }),
-  ],
 });
 
 const handleRequest = frames(async (ctx) => {
   const pageIndex = Number(ctx.searchParams.pageIndex || 0);
-  const previousFrame = getPreviousFrame(ctx.searchParams);
-  //console.log("prev", previousFrame);
-  console.log("context message", ctx.message);
-  const userData = ctx.message?.requesterUserData;
-  console.log("user", ctx.message?.requesterUserData);
-  console.log("username", userData?.username);
-  //console.log("url", ctx.url);
   console.log(pageIndex);
-  console.log(validateFrameAction(ctx.request));
+  let values = null;
+  if (ctx.pressedButton) {
+    const result = await returnFrameAction(ctx.request);
+    values = result.match(
+      (returnFrameAction) => {
+        console.log("FID: ", returnFrameAction.untrustedData.fid);
+        return returnFrameAction;
+      },
+      (error) => {
+        console.error("Validation error: ", error);
+        return null;
+      }
+    );
+  }
+  console.log("Values: ", values);
+  const userData = await getUserDataForFid({
+    fid: (values?.untrustedData?.fid as number) || 0,
+  });
+  console.log("UserData: ", userData);
 
   if (pageIndex === 1) {
     // RECEIVE PAGE
@@ -552,7 +557,7 @@ const handleRequest = frames(async (ctx) => {
         image: (
           <div tw="bg-purple-800 text-white w-full h-full justify-center items-center flex flex-col">
             <a>{`Welcome to frAAme`}</a>
-            <a>{`${userData?.username}`}</a>
+            <a>{`${userData.username}`}</a>
             <a>{`Your Address:`}</a>
             <a>Balances:</a>
             <a>ETH:</a>

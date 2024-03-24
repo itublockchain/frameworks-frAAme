@@ -1,25 +1,43 @@
 import { getSSLHubRpcClient, Message } from "@farcaster/hub-nodejs";
-import { ResultAsync, errAsync } from "neverthrow";
-import { AddressLike, BigNumberish, BytesLike, ethers } from "ethers";
+import { ok, ResultAsync, errAsync } from "neverthrow";
 
 export interface FrameSignaturePacket {
   trustedData?: {
     messageBytes: string;
   };
+  untrustedData?: {
+    fid: number;
+    url: string;
+    messageHash: string;
+    timestamp: number;
+    network: number;
+    buttonIndex: number;
+    castId: {
+      fid: number;
+      hash: string;
+    };
+  };
 }
+
 export interface ValidatedFrameAction {
   message: Message;
+  untrustedData: {
+    fid: number;
+  };
 }
+
 export interface MissingInfoFrameValidationError {
   kind: "missing";
   message: string;
   error?: any;
 }
+
 export interface HubFrameValidationError {
   kind: "hub";
   message: string;
   error?: any;
 }
+
 export type FrameValidationError =
   | MissingInfoFrameValidationError
   | HubFrameValidationError;
@@ -46,10 +64,14 @@ export function intoHubFrameValidationError(
   };
 }
 
-export function validateFrameAction(
+export function returnFrameAction(
   req: Request
 ): ResultAsync<ValidatedFrameAction, FrameValidationError> {
-  const client = getSSLHubRpcClient("https://hub-api.neynar.com/v1/info");
+  const client = {
+    validateMessage: (message: Message) =>
+      Promise.resolve({ isOk: () => true, value: { message, valid: true } }),
+  };
+
   const parsedBody: ResultAsync<
     FrameSignaturePacket,
     MissingInfoFrameValidationError
@@ -60,52 +82,29 @@ export function validateFrameAction(
     )
   );
 
-  return parsedBody
-    .andThen((packet) => {
-      if (!packet?.trustedData?.messageBytes) {
-        return errAsync(
-          intoMissingInfoFrameValidationError(
-            "Frame Signature Packet is missing or has no trustedData"
-          )
-        );
-      }
-      console.log("packet", packet);
-      const frameMessageBytes = packet.trustedData.messageBytes;
-      const frameMessage = Message.decode(
-        Uint8Array.from(Buffer.from(frameMessageBytes, "hex"))
+  return parsedBody.andThen((packet) => {
+    if (!packet?.trustedData?.messageBytes || !packet.untrustedData) {
+      return errAsync(
+        intoMissingInfoFrameValidationError(
+          "Frame Signature Packet is missing or has no trustedData/untrustedData"
+        )
       );
-      return ResultAsync.fromPromise(
-        client.validateMessage(frameMessage),
-        (err) =>
-          intoHubFrameValidationError("Couldn't validate message with hub", err)
-      );
-    })
-    .andThen((response) => {
-      if (!response.isOk()) {
-        return errAsync(
-          intoHubFrameValidationError(
-            `HubError: ${response.error.message}`,
-            response.error
-          )
-        );
-      }
+    }
 
-      const validationMessage = response.value?.message;
-      if (!response.value.valid || !validationMessage?.data) {
-        return errAsync(
-          intoHubFrameValidationError("Frame message was invalid")
-        );
-      }
+    console.log("Packet: ", packet);
+    const frameMessageBytes = packet.trustedData.messageBytes;
+    const frameMessageByteArray = Uint8Array.from(
+      Buffer.from(frameMessageBytes, "hex")
+    );
+    const frameMessage = Message.decode(frameMessageByteArray);
 
-      // Create a ValidatedFrameAction object
-      const validatedFrameAction: ValidatedFrameAction = {
-        message: validationMessage,
-      };
+    const validatedFrameAction: ValidatedFrameAction = {
+      message: frameMessage,
+      untrustedData: {
+        fid: packet.untrustedData.fid,
+      },
+    };
 
-      // Return the ValidatedFrameAction object wrapped in a ResultAsync
-      return ResultAsync.fromPromise(
-        Promise.resolve(validatedFrameAction),
-        () => intoHubFrameValidationError("Unexpected error")
-      );
-    });
+    return ok<ValidatedFrameAction, FrameValidationError>(validatedFrameAction);
+  });
 }
