@@ -2,33 +2,31 @@
 import { createFrames, Button } from "frames.js/next";
 import { getFrameMessage, getPreviousFrame } from "frames.js/next/server";
 import { farcasterHubContext } from "frames.js/middleware";
+import { validateFrameAction } from "./handle";
 
 const frames = createFrames({
   basePath: "/frames",
   initialState: {
     pageIndex: 0,
   },
-  /*   middleware: [
+  middleware: [
     farcasterHubContext({
-      hubHttpUrl: "http://localhost:3010",
+      hubHttpUrl: "https://hub-api.neynar.com/v1/info",
     }),
-  ], */
+  ],
 });
 
 const handleRequest = frames(async (ctx) => {
   const pageIndex = Number(ctx.searchParams.pageIndex || 0);
   const previousFrame = getPreviousFrame(ctx.searchParams);
-  console.log(previousFrame);
-  const frameMessage = await getFrameMessage(previousFrame.postBody, {
-    hubHttpUrl: "http://localhost:3010",
-  });
-  const userData = frameMessage?.requesterUserData;
-  console.log("prev", previousFrame);
-  console.log("message", frameMessage);
+  //console.log("prev", previousFrame);
   console.log("context message", ctx.message);
-  console.log("context", ctx.request);
-  console.log("url", ctx.url);
+  const userData = ctx.message?.requesterUserData;
+  console.log("user", ctx.message?.requesterUserData);
+  console.log("username", userData?.username);
+  //console.log("url", ctx.url);
   console.log(pageIndex);
+  console.log(validateFrameAction(ctx.request));
 
   if (pageIndex === 1) {
     // RECEIVE PAGE
@@ -535,7 +533,7 @@ const handleRequest = frames(async (ctx) => {
       return {
         image: (
           <div tw="flex flex-col justify-center items-center h-full w-full">
-            <a>{`Welcome to frAAme`}</a>
+            <a>{`Welcome to frAAme `}</a>
             <a>{`Create an account or fetch your account to continue`}</a>
           </div>
         ),
