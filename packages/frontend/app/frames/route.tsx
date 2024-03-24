@@ -46,18 +46,13 @@ const handleRequest = frames(async (ctx) => {
 
   if (userData) {
     const response = await getUserAA(values);
-    if (response == "no") {
+    if (response == "Not Deployed") {
       console.log("No AA found for this user.");
       aaAddress = null;
     }
     aaAddress = response;
     balance = await getUserBaseBalance(aaAddress);
   }
-
-  /*   if (values) {
-    console.log("API REQUEST STARTED ");
-    sendTestPostRequest(values);
-  } */
 
   if (pageIndex === 1) {
     // RECEIVE PAGE

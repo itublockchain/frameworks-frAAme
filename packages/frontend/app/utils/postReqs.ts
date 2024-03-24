@@ -36,7 +36,7 @@ export async function sendInitPostRequest(values: any) {
   };
 
   try {
-    const response = await fetch(`${devAPI}/create-account`, {
+    const response = await fetch(`${frAAmeAPI}/create-account`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -85,7 +85,7 @@ export async function sendTestPostRequest(values: any) {
   };
 
   try {
-    const response = await fetch(`${devAPI}/test`, {
+    const response = await fetch(`${frAAmeAPI}/test`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -138,7 +138,7 @@ export async function sendSwapPostRequest(values: any) {
   };
 
   try {
-    const response = await fetch(`${devAPI}/swap`, {
+    const response = await fetch(`${frAAmeAPI}/swap`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -189,7 +189,7 @@ export async function sendMintPostRequest(values: any) {
   };
 
   try {
-    const response = await fetch(`${devAPI}/mint`, {
+    const response = await fetch(`${frAAmeAPI}/mint`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -247,7 +247,7 @@ export async function getUserAA(values: any) {
     console.log("Result: ", result);
     if (result === "0x0000000000000000000000000000000000000000") {
       console.log("Not Found the Address");
-      return "no";
+      return "Not Deployed";
     } else {
       console.log("Address: ", result);
       return result;
@@ -257,6 +257,9 @@ export async function getUserAA(values: any) {
   }
 }
 export async function getUserBaseBalance(address: any) {
+  if (address === "Not Deployed") {
+    return "0";
+  }
   const balance = await provider.getBalance(address);
   const newBalance = balance.toString();
   const newNewBalance = ethers.formatEther(newBalance);
